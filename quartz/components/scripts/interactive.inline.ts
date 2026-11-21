@@ -16,12 +16,12 @@ function esc(value: unknown): string {
 }
 
 // Self-contained: its source is copied into a Blob Worker after transpilation.
-function sqlWorkerRuntime() {
+function sqlWorkerRuntime(libraryUrl: string) {
   const ctx = self as any
   let a: any
   let bootError = ""
   try {
-    ctx.importScripts(ALASQL_CDN)
+    ctx.importScripts(libraryUrl)
     a = ctx.alasql
     if (!a) throw new Error("AlaSQL не загрузился")
     a.options.cache = false
@@ -133,7 +133,7 @@ class SQLClient {
   constructor(private setup: string) {}
   private start() {
     if (this.worker) return
-    const source = "const ALASQL_CDN = " + JSON.stringify(ALASQL_CDN) + ";(" + sqlWorkerRuntime.toString() + ")();"
+    const source = "(" + sqlWorkerRuntime.toString() + ")(" + JSON.stringify(ALASQL_CDN) + ");"
     const url = URL.createObjectURL(new Blob([source], { type: "text/javascript" }))
     this.worker = new Worker(url)
     URL.revokeObjectURL(url)
