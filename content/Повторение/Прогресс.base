@@ -1,0 +1,38 @@
+filters:
+  and:
+    - file.inFolder("Лекции")
+    - type == "lecture"
+properties:
+  note.lecture:
+    displayName: Номер
+  note.status:
+    displayName: Состояние
+  note.confidence:
+    displayName: Понимание 0–5
+  note.review_next:
+    displayName: Повторить
+  note.reviewed:
+    displayName: Повторял
+views:
+  - type: table
+    name: Все лекции
+    order:
+      - lecture
+      - file.name
+      - status
+      - confidence
+      - review_next
+      - reviewed
+    sort:
+      - property: lecture
+        direction: ASC
+  - type: table
+    name: Требуют внимания
+    filters:
+      or:
+        - confidence < 3
+        - status == "Повторить"
+    order:
+      - file.name
+      - confidence
+      - review_next
